@@ -8,7 +8,7 @@ Implementar el algoritmo de multiplicación de matrices con números en coma flo
 
 ## Tareas a realizar
 
-- [] Implementación en un multiprocesador usando OpenMP
+- [x] Implementación en un multiprocesador usando OpenMP
 - [] Implementación en un multicomputador usando OpenMPI
 - [] Implementación en un coprocesadorde tipo GPU usando CUDA
 - [] Evaluación de prestaciones usando contadores hardware
