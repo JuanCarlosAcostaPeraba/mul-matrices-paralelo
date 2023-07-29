@@ -100,6 +100,6 @@ int main(int argc, char *argv[]) {
 }
 
 /// Instrucciones para compilar el programa:
-/// gcc -Wall -fopenmp -o openmp openmp.c
+/// gcc openmp.c -o openmp -fopenmp
 /// Instrucciones para ejecutar el programa:
 /// ./openmp

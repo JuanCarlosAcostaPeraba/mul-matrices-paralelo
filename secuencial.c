@@ -96,6 +96,6 @@ int main(int argc, char *argv[]) {
 }
 
 /// Instrucciones para compilar el programa:
-/// gcc -o secuencial secuencial.c
+/// gcc secuencial.c -o secuencial
 /// Instrucciones para ejecutar el programa:
 /// ./secuencial
