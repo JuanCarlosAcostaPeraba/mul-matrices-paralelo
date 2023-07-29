@@ -5,6 +5,7 @@
 // Inclusiones
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 
 // Constantes
 #define N 2
