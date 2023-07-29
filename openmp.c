@@ -24,6 +24,7 @@ void multiplicar_matrices(int **matriz_a, int **matriz_b, int **matriz_c) {
 		}
 	}
 }
+
 void imprimir_matriz(int **matriz) {
 	int i, j;
 	for (i = 0; i < N; i++) {
@@ -37,6 +38,9 @@ void imprimir_matriz(int **matriz) {
 
 // Función principal
 int main(int argc, char *argv[]) {
+	// Empezar contador de tiempo
+	clock_t start = clock();
+
 	// Declaración de variables
 	int **matriz_a, **matriz_b, **matriz_c;
 	int i, j;
@@ -51,7 +55,7 @@ int main(int argc, char *argv[]) {
 		matriz_c[i] = (int *) malloc(N * sizeof(int));
 	}
 
-	// Inicialización de las matrices
+	// Inicializar matrices
 	for (i = 0; i < N; i++) {
 		for (j = 0; j < N; j++) {
 			// rellena la matriz a y b con valores aleatorios entre 0 y 9
@@ -62,15 +66,15 @@ int main(int argc, char *argv[]) {
 		}
 	}
 
-	// Multiplicación de las matrices
+	// Multiplicar matrices
 	multiplicar_matrices(matriz_a, matriz_b, matriz_c);
 
-	// Impresión de las matrices
+	// Imprimir matrices
 	imprimir_matriz(matriz_a);
 	imprimir_matriz(matriz_b);
 	imprimir_matriz(matriz_c);
 
-	// Liberación de memoria de las matrices
+	// Liberar memoria de las matrices
 	for (i = 0; i < N; i++) {
 		free(matriz_a[i]);
 		free(matriz_b[i]);
@@ -80,7 +84,10 @@ int main(int argc, char *argv[]) {
 	free(matriz_b);
 	free(matriz_c);
 
-	// Finalización exitosa
+	// Imprimir tiempo de ejecución
+	printf("Tiempo de ejecución: %f segundos\n", ((double) clock() - start) / CLOCKS_PER_SEC);
+
+	// Finalizar programa normalmente
 	return EXIT_SUCCESS;
 }
 
