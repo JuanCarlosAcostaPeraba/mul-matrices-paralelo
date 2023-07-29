@@ -8,6 +8,7 @@
 
 // Constantes
 #define N 2
+#define CLOCKS_PER_SEC 1000000
 
 // Funciones
 void multiplicar_matrices(int **matriz_a, int **matriz_b, int **matriz_c) {
