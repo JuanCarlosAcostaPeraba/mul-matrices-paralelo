@@ -8,7 +8,7 @@
 #include <time.h>
 
 // Constantes
-#define N 2
+#define N 1000
 #define CLOCKS_PER_SEC 1000000
 
 // Funciones
@@ -36,12 +36,25 @@ void imprimir_matriz(int **matriz) {
 
 // Función principal
 int main(int argc, char *argv[]) {
-	// Empezar contador de tiempo
-	clock_t start = clock();
-
-	// Declarar variables
+	// Declaración de variables
 	int **matriz_a, **matriz_b, **matriz_c;
 	int i, j;
+
+	struct timeval inicio, fin;
+
+	// Empezar contador de tiempo
+	clock_t start = clock(); // CPU
+	gettimeofday(&inicio, NULL); // Hora del sistema
+
+	// Reserva de memoria para las matrices
+	matriz_a = (int **) malloc(N * sizeof(int *));
+	matriz_b = (int **) malloc(N * sizeof(int *));
+	matriz_c = (int **) malloc(N * sizeof(int *));
+	for (i = 0; i < N; i++) {
+		matriz_a[i] = (int *) malloc(N * sizeof(int));
+		matriz_b[i] = (int *) malloc(N * sizeof(int));
+		matriz_c[i] = (int *) malloc(N * sizeof(int));
+	}
 
 	// Inicializar matrices
 	for (i = 0; i < N; i++) {
@@ -62,8 +75,21 @@ int main(int argc, char *argv[]) {
 	imprimir_matriz(matriz_b);
 	imprimir_matriz(matriz_c);
 
+	// Liberar memoria de las matrices
+	for (i = 0; i < N; i++) {
+		free(matriz_a[i]);
+		free(matriz_b[i]);
+		free(matriz_c[i]);
+	}
+	free(matriz_a);
+	free(matriz_b);
+	free(matriz_c);
+
+	gettimeofday(&fin, NULL);
+
 	// Imprimir tiempo de ejecución
-	printf("Tiempo de ejecución: %f segundos\n", ((double) clock() - start) / CLOCKS_PER_SEC);
+	printf("Tiempo de ejecución del programa (CPU): %f segundos\n", ((double) clock() - start) / CLOCKS_PER_SEC);
+	printf("Tiempo de ejecución del programa (gettimeofday): %f segundos\n", (double) (fin.tv_sec - inicio.tv_sec) + (double) (fin.tv_usec - inicio.tv_usec) / 1000000);
 
 	// Fin del programa
 	return 0;
