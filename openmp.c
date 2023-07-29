@@ -96,7 +96,7 @@ int main(int argc, char *argv[]) {
 	printf("Tiempo de ejecución del programa (gettimeofday): %f segundos\n", (double) (fin.tv_sec - inicio.tv_sec) + (double) (fin.tv_usec - inicio.tv_usec) / 1000000);
 
 	// Finalizar programa normalmente
-	return EXIT_SUCCESS;
+	return 0;
 }
 
 /// Instrucciones para compilar el programa:
