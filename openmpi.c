@@ -9,7 +9,7 @@
 #include <time.h>
 
 // Constantes
-#define N 6
+#define N 8
 #define CLOCKS_PER_SEC 1000000
 
 // Funciones
