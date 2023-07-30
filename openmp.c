@@ -92,6 +92,7 @@ int main(int argc, char *argv[]) {
 	gettimeofday(&fin, NULL);
 
 	// Imprimir tiempo de ejecución
+	printf("\n-------------------\n");
 	printf("Tiempo de ejecución del programa (CPU): %f segundos\n", ((double) clock() - start) / CLOCKS_PER_SEC);
 	printf("Tiempo de ejecución del programa (gettimeofday): %f segundos\n", (double) (fin.tv_sec - inicio.tv_sec) + (double) (fin.tv_usec - inicio.tv_usec) / 1000000);
 

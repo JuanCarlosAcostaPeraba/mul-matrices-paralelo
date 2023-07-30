@@ -62,7 +62,7 @@ int main(int argc, char *argv[]) {
 			// rellena la matriz a y b con valores aleatorios entre 0 y 9
 			matriz_a[i][j] = rand() % 10;
 			matriz_b[i][j] = rand() % 10;
-			// inicializa la matriz c con ceros
+			// inicializa la matriz c con 0
 			matriz_c[i][j] = 0;
 		}
 	}
@@ -88,6 +88,7 @@ int main(int argc, char *argv[]) {
 	gettimeofday(&fin, NULL);
 
 	// Imprimir tiempo de ejecución
+	printf("\n-------------------\n");
 	printf("Tiempo de ejecución del programa (CPU): %f segundos\n", ((double) clock() - start) / CLOCKS_PER_SEC);
 	printf("Tiempo de ejecución del programa (gettimeofday): %f segundos\n", (double) (fin.tv_sec - inicio.tv_sec) + (double) (fin.tv_usec - inicio.tv_usec) / 1000000);
 
