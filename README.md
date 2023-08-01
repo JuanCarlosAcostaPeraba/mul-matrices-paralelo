@@ -1,3 +1,5 @@
+# Trabajo Práctico 3. Programación paralela de la multiplicación de matrices
+
 ## Objetivo
 
 Implementar el algoritmo de multiplicación de matrices con números en coma flotante en las librerías paralelas OpenMP, OpenMPI y CUDA utilizando un ordenador sobremesa.
@@ -297,7 +299,7 @@ Para ejecutar el programa se necesita un compilador del lenguaje C instalado en 
 #define CLOCKS_PER_SEC 1000000
 
 // Funciones
-void fill_matrix(int matrix[N][N]) {
+void rellenar_matriz(int matrix[N][N]) {
 	for (int i = 0; i < N; i++) {
 		for (int j = 0; j < N; j++) {
 			matrix[i][j] = rand() % 10;
@@ -305,7 +307,7 @@ void fill_matrix(int matrix[N][N]) {
 	}
 }
 
-void print_matrix(int matrix[N][N]) {
+void imprimir_matriz(int matrix[N][N]) {
 	// Imprime la matriz
 	for (int i = 0; i < N; i++) {
 		for (int j = 0; j < N; j++) {
@@ -316,7 +318,7 @@ void print_matrix(int matrix[N][N]) {
 	printf("\n");
 }
 
-void matrix_mult(int a[N][N], int b[N][N], int c[N][N]) {
+void multiplicar_matrices(int a[N][N], int b[N][N], int c[N][N]) {
 	// Multiplicación de dos matrices cuadradas
 	for (int i = 0; i < N; i++) {
 		for (int j = 0; j < N; j++) {
@@ -328,6 +330,7 @@ void matrix_mult(int a[N][N], int b[N][N], int c[N][N]) {
 	}
 }
 
+// Función principal
 int main(int argc, char *argv[]) {
 	// Declaración de variables
 	int rank, size;
@@ -352,14 +355,14 @@ int main(int argc, char *argv[]) {
 
 	if (rank == 0) {
 		// Llenar las matrices A y B solo en el proceso 0
-		fill_matrix(matrix_A);
-		fill_matrix(matrix_B);
+		rellenar_matriz(matrix_A);
+		rellenar_matriz(matrix_B);
 
 		printf("\nMatriz A:\n");
-		print_matrix(matrix_A);
+		imprimir_matriz(matrix_A);
 
 		printf("\nMatriz B:\n");
-		print_matrix(matrix_B);
+		imprimir_matriz(matrix_B);
 	}
 
 	// Transmitir las matrices A y B a todos los procesos
@@ -367,14 +370,14 @@ int main(int argc, char *argv[]) {
 	MPI_Bcast(&matrix_B[0][0], N * N, MPI_INT, 0, MPI_COMM_WORLD);
 
 	// Multiplicación de matrices
-	matrix_mult(matrix_A, matrix_B, matrix_C);
+	multiplicar_matrices(matrix_A, matrix_B, matrix_C);
 
 	// Recopilar resultados en el proceso 0
 	MPI_Gather(&matrix_C[0][0], N * N, MPI_INT, &matrix_C[0][0], N * N, MPI_INT, 0, MPI_COMM_WORLD);
 
 	if (rank == 0) {
 		printf("\nMatriz C (resultado):\n");
-		print_matrix(matrix_C);
+		imprimir_matriz(matrix_C);
 	}
 
 	// Imprimir tiempo de ejecución
@@ -388,6 +391,80 @@ int main(int argc, char *argv[]) {
 
 	return 0;
 }
+```
+
+### Explicación
+
+En este programa se realiza la multiplicación de dos matrices cuadradas de tamaño `N = 8` de forma paralela tratando cada `core` del procesador como un ordenador independiente. Por este motivo, el tamaño de las matrices no pueden ser mayores, ya que no dispongo de más núcleos.
+
+El tiempo individual que ha tardado este programa en ejecutarse en mi ordenador ha sido de:
+
+```
+-------------------
+Proceso 3 de 8
+Tiempo de ejecución del programa (CPU): 0.000173 segundos
+Tiempo de ejecución del programa (MPI_Wtime): 0.000249 segundos
+-------------------
+Proceso 5 de 8
+Tiempo de ejecución del programa (CPU): 0.000182 segundos
+Tiempo de ejecución del programa (MPI_Wtime): 0.000280 segundos
+-------------------
+Proceso 7 de 8
+Tiempo de ejecución del programa (CPU): 0.000172 segundos
+Tiempo de ejecución del programa (MPI_Wtime): 0.000268 segundos
+-------------------
+Proceso 6 de 8
+Tiempo de ejecución del programa (CPU): 0.000166 segundos
+Tiempo de ejecución del programa (MPI_Wtime): 0.000285 segundos
+-------------------
+Proceso 0 de 8
+Tiempo de ejecución del programa (CPU): 0.000296 segundos
+Tiempo de ejecución del programa (MPI_Wtime): 0.000324 segundos
+-------------------
+Proceso 2 de 8
+Tiempo de ejecución del programa (CPU): 0.000197 segundos
+Tiempo de ejecución del programa (MPI_Wtime): 0.000298 segundos
+-------------------
+Proceso 4 de 8
+Tiempo de ejecución del programa (CPU): 0.000180 segundos
+Tiempo de ejecución del programa (MPI_Wtime): 0.000309 segundos
+-------------------
+Proceso 1 de 8
+Tiempo de ejecución del programa (CPU): 0.000183 segundos
+Tiempo de ejecución del programa (MPI_Wtime): 0.000341 segundos
+```
+
+Dando un promedio de tiempos de:
+
+```
+Tiempo promedio de ejecución del programa (CPU): 0.00019 segundos
+Tiempo promedio de ejecución del programa (MPI_Wtime): 0.00029 segundos
+```
+
+### Como ejecutar
+
+Para ejecutar el programa se necesita un compilador del lenguaje C instalado en la máquina y la librería de `OpenMPI`, y seguir los siguientes pasos:
+
+1. Compilar el código
+
+   ```bash
+   mpicc openmpi.c -o openmpi
+   ```
+
+2. Ejecutar el código
+
+   ```bash
+   mpirun -np X ./openmpi
+   ```
+
+   Donde `X` es el número de procesos que se van a lanzar. En mi caso, usé `X = 8` porque poseo un procesador con `8 cores`.
+
+## Implementación en un coprocesador de tipo GPU usando CUDA
+
+### Código
+
+```c
+
 ```
 
 ### Explicación
