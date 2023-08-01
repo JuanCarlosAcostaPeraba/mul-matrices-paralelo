@@ -1,0 +1,11 @@
+# omitir todos los archivos ejecutables
+*.out
+*.exe
+*.dll
+*.so
+*.dylib
+*.o
+secuencial
+openmp
+openmpi
+cuda
