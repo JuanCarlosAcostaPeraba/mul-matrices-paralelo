@@ -1,6 +1,6 @@
 /// Trabajo Práctico 3. Programación paralela de la multiplicación de matrices
 
-/// Implementación en un multiprocesador usando OpenMPI
+/// Implementación en un multicomputador usando OpenMPI
 
 // Inclusiones
 #include <stdio.h>
