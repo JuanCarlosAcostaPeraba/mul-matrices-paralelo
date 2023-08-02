@@ -17,14 +17,16 @@
 __global__ void multiplicar_matrices(int *a, int *b, int *c, int n) {
 	int fila = blockIdx.y * blockDim.y + threadIdx.y;
 	int columna = blockIdx.x * blockDim.x + threadIdx.x;
-	int suma = 0;
+
 	if (fila < n && columna < n) {
+		int suma = 0;
 		for (int i = 0; i < n; i++) {
 			suma += a[fila * n + i] * b[i * n + columna];
 		}
 		c[fila * n + columna] = suma;
 	}
 }
+
 
 // Main
 int main() {
