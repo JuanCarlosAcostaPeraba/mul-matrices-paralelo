@@ -612,4 +612,4 @@ Para ejecutar este código hay que seguir los siguientes pasos:
 
    ![Botón del play](https://file.notion.so/f/s/4345d100-04c9-475d-944f-807d1c36d92c/Untitled.png?id=af52c0aa-1416-4446-ad29-f4bb344f17b6&table=block&spaceId=468e4f0a-eef2-4192-a273-959b9a958a93&expirationTimestamp=1691085600000&signature=npNxcTxDE0MazRR9JVwA83c7qnwfvoUwDG6GgyVNU2w&downloadName=Untitled.png)
 
-6. Posteriormente, si se queiren hacer cambios, se le da al mismo botón, ya que por cada cambio, el código se compila de nuevo.
+6. Posteriormente, si se queiren hacer cambios, se le da al mismo botón, ya que por cada cambio el código se compila de nuevo.
