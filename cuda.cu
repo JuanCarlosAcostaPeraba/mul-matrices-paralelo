@@ -100,12 +100,14 @@ int main() {
 		cudaMemcpy(d, dev_c, size, cudaMemcpyDeviceToHost);
 
 		// Impresión de matrices
+		printf("Multiplicación de matrices en el host:\n");
 		printf("Matriz A:\n");
 		printMatrix(a, N);
 		printf("Matriz B:\n");
 		printMatrix(b, N);
 		printf("Matriz C:\n");
 		printMatrix(c, N);
+		printf("Multiplicación de matrices en el device:\n");
 		printf("Matriz D:\n");
 		printMatrix(d, N);
 		printf("Matriz E:\n");
