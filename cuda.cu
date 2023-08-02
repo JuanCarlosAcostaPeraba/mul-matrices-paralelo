@@ -12,8 +12,8 @@
 
 // Funciones
 __global__ void multiplicar_matrices(int *matriz_a, int *matriz_b, int *matriz_c) {
-		int i = blockIdx.x * blockDim.x + threadIdx.x;
-		int j = blockIdx.y * blockDim.y + threadIdx.y;
+		int i = threadIdx.x;
+		int j = threadIdx.y;
 
 		int k;
 		for (k = 0; k < N; k++) {
@@ -22,13 +22,15 @@ __global__ void multiplicar_matrices(int *matriz_a, int *matriz_b, int *matriz_c
 }
 
 void imprimir_matriz(int *matriz) {
-    for (int i = 0; i < N; i++) {
-        for (int j = 0; j < N; j++) {
-            printf("%d ", matriz[i * N + j]);
-        }
-        printf("\n");
-    }
-    printf("\n");
+		int i, j;
+		for (i = 0; i < N; i++) {
+				printf("[");
+				for (j = 0; j < N; j++) {
+						printf("%d ", matriz[i * N + j]);
+				}
+				printf("]\n");
+		}
+		printf("\n");
 }
 
 // Main
