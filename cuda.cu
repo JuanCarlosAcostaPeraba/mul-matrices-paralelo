@@ -4,97 +4,100 @@
 
 // Inclusiones
 #include <stdio.h>
+#include <stdlib.h>
+#include <cuda.h>
+#include <cuda_runtime.h>
+#include <device_launch_parameters.h>
 
-// Constantes
-#define N 2 // Tamaño de la matriz
-#define BLOCK_SIZE 2 // Tamaño del bloque
+// Definiciones
+#define N 2
+#define BLOCK_SIZE 2
 
 // Funciones
-// Kernel
-__global__ void multiplicar_matrices(int *a, int *b, int *c) {
-	// Calcula el índice de la matriz
-	int row = blockIdx.y * blockDim.y + threadIdx.y;
-	int col = blockIdx.x * blockDim.x + threadIdx.x;
-
-	// Calcula el elemento de la matriz
-	int sum = 0;
-	for (int i = 0; i < N; i++) {
-		sum += a[row * N + i] * b[i * N + col];
-	}
-
-	// Guarda el resultado
-	c[row * N + col] = sum;
-}
-
-// rellenar_matriz
-void rellenar_matriz(int *matriz) {
-	for (int i = 0; i < N * N; i++) {
-		matriz[i] = rand() % 10;
-	}
-}
-
-// imprimir_matriz
-void imprimir_matriz(int *matriz) {
-	for (int i = 0; i < N * N; i++) {
-		printf("%d ", matriz[i]);
-		if ((i + 1) % N == 0) {
-			printf("\n");
+__global__ void multiplicar_matrices(int *a, int *b, int *c, int n) {
+	int fila = blockIdx.y * blockDim.y + threadIdx.y;
+	int columna = blockIdx.x * blockDim.x + threadIdx.x;
+	int suma = 0;
+	if (fila < n && columna < n) {
+		for (int i = 0; i < n; i++) {
+			suma += a[fila * n + i] * b[i * n + columna];
 		}
+		c[fila * n + columna] = suma;
 	}
 }
 
-// Función principal
+// Main
 int main() {
-	// Matrices CPU
 	int *a_cpu, *b_cpu, *c_cpu;
-	// Matrices GPU
-	int *a, *b, *c;
+	int *a_gpu, *b_gpu, *c_gpu;
 	size_t size = N * N * sizeof(int);
 
-	// Reservar memoria en el CPU
+	// Reserva de memoria en CPU
 	a_cpu = (int *)malloc(size);
 	b_cpu = (int *)malloc(size);
 	c_cpu = (int *)malloc(size);
 
-	// Rellenar las matrices
-	rellenar_matriz(a_cpu);
-	rellenar_matriz(b_cpu);
+	// Inicializar matrices
+	for (int i = 0; i < N * N; i++) {
+		a_cpu[i] = rand() % 10;
+		b_cpu[i] = rand() % 10;
+	}
 
-	// Inicializar las matrices
-	cudaMallocManaged(&a, size);
-	cudaMallocManaged(&b, size);
-	cudaMallocManaged(&c, size);
-
-	// Copiar las matrices al GPU
-	cudaMemcpy(a, a_cpu, size, cudaMemcpyHostToDevice);
-	cudaMemcpy(b, b_cpu, size, cudaMemcpyHostToDevice);
-
-	// Definir las dimensiones del bloque y las hebras
-	dim3 threads_per_block(BLOCK_SIZE, BLOCK_SIZE);
-	dim3 num_blocks(N / BLOCK_SIZE, N / BLOCK_SIZE);
-
-	// Ejecutar el kernel
-	multiplicar_matrices<<<num_blocks, threads_per_block>>>(a, b, c);
-
-	// Copiar el resultado al CPU
-	cudaMemcpy(c_cpu, c, size, cudaMemcpyDeviceToHost);
-
-	// Imprimir las matrices
+	// Mostrar matrices
 	printf("Matriz A:\n");
-	imprimir_matriz(a_cpu);
+	for (int i = 0; i < N * N; i++) {
+		printf("%d ", a_cpu[i]);
+		if ((i + 1) % N == 0) {
+			printf("\n");
+		}
+	}
+	printf("\n");
+
 	printf("Matriz B:\n");
-	imprimir_matriz(b_cpu);
+	for (int i = 0; i < N * N; i++) {
+		printf("%d ", b_cpu[i]);
+		if ((i + 1) % N == 0) {
+			printf("\n");
+		}
+	}
+	printf("\n");
+
+	// Reserva de memoria en GPU
+	cudaMalloc(&a_gpu, size);
+	cudaMalloc(&b_gpu, size);
+	cudaMalloc(&c_gpu, size);
+
+	// Copiar datos de CPU a GPU
+	cudaMemcpy(a_gpu, a_cpu, size, cudaMemcpyHostToDevice);
+	cudaMemcpy(b_gpu, b_cpu, size, cudaMemcpyHostToDevice);
+
+	// Definir bloques e hilos
+	dim3 threadsPerBlock(BLOCK_SIZE, BLOCK_SIZE);
+	dim3 numBlocks(N / BLOCK_SIZE, N / BLOCK_SIZE);
+
+	// Lanzar kernel
+	multiplicar_matrices<<<numBlocks, threadsPerBlock>>>(a_gpu, b_gpu, c_gpu, N);
+
+	// Copiar datos de GPU a CPU
+	cudaMemcpy(c_cpu, c_gpu, size, cudaMemcpyDeviceToHost);
+
+	// Mostrar resultado
 	printf("Matriz C:\n");
-	imprimir_matriz(c_cpu);
+	for (int i = 0; i < N * N; i++) {
+		printf("%d ", c_cpu[i]);
+		if ((i + 1) % N == 0) {
+			printf("\n");
+		}
+	}
+	printf("\n");
 
 	// Liberar memoria
 	free(a_cpu);
 	free(b_cpu);
 	free(c_cpu);
-	cudaFree(a);
-	cudaFree(b);
-	cudaFree(c);
-
+	cudaFree(a_gpu);
+	cudaFree(b_gpu);
+	cudaFree(c_gpu);
 
 	return 0;
 }
