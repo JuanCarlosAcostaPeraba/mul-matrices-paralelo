@@ -12,16 +12,13 @@
 
 // Funciones
 __global__ void multiplicar_matrices(int *matriz_a, int *matriz_b, int *matriz_c) {
-    int row = blockIdx.y * blockDim.y + threadIdx.y;
-    int col = blockIdx.x * blockDim.x + threadIdx.x;
+		int i = blockIdx.x * blockDim.x + threadIdx.x;
+		int j = blockIdx.y * blockDim.y + threadIdx.y;
 
-    if (row < N && col < N) {
-        int sum = 0;
-        for (int i = 0; i < N; i++) {
-            sum += matriz_a[row * N + i] * matriz_b[i * N + col];
-        }
-        matriz_c[row * N + col] = sum;
-    }
+		int k;
+		for (k = 0; k < N; k++) {
+				matriz_c[i * N + j] += matriz_a[i * N + k] * matriz_b[k * N + j];
+		}
 }
 
 void imprimir_matriz(int *matriz) {
