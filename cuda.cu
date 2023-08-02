@@ -24,11 +24,10 @@ __global__ void multiplicar_matrices(int *matriz_a, int *matriz_b, int *matriz_c
 void imprimir_matriz(int *matriz) {
 		int i, j;
 		for (i = 0; i < N; i++) {
-				printf("[");
 				for (j = 0; j < N; j++) {
 						printf("%d ", matriz[i * N + j]);
 				}
-				printf("]\n");
+				printf("\n");
 		}
 		printf("\n");
 }
