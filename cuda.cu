@@ -27,7 +27,6 @@ __global__ void multiplicar_matrices(int *a, int *b, int *c, int n) {
 	}
 }
 
-
 // Main
 int main() {
 	int *a_cpu, *b_cpu, *c_cpu;
@@ -80,6 +79,12 @@ int main() {
 
 	// Lanzar kernel
 	multiplicar_matrices<<<numBlocks, threadsPerBlock>>>(a_gpu, b_gpu, c_gpu, N);
+
+	cudaDeviceSynchronize();
+	cudaError_t error = cudaGetLastError();
+	if (error != cudaSuccess) {
+		printf("Error de CUDA: %s\n", cudaGetErrorString(error));
+	}
 
 	// Copiar datos de GPU a CPU
 	cudaMemcpy(c_cpu, c_gpu, size, cudaMemcpyDeviceToHost);
