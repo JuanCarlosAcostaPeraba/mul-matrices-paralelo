@@ -5,76 +5,126 @@
 // Inclusiones
 #include <stdio.h>
 #include <stdlib.h>
+#include <cuda.h>
 #include <cuda_runtime.h>
+#include <device_launch_parameters.h>
 
 // Definiciones
-#define N 2 // Tamaño de las matrices
+#define N 2 // Tamaño de la matriz
+#define BLOCK_SIZE 2 // Tamaño del bloque
 
-// Funciones
-__global__ void multiplicar_matrices(int *matriz_a, int *matriz_b, int *matriz_c) {
-		int i = threadIdx.x;
-		int j = threadIdx.y;
-
-		int k;
-		for (k = 0; k < N; k++) {
-				matriz_c[i * N + j] += matriz_a[i * N + k] * matriz_b[k * N + j];
+// Función para multiplicar matrices en el host
+void matrixMultCPU(int *a, int *b, int *c, int n) {
+		int val = 0;
+		for (int row = 0; row < n; row++) {
+				for (int col = 0; col < n; col++){
+						val = 0;
+						for (int k = 0; k < n; k++) {
+								val += a[row * n + k] * b[k * n + col];
+						}
+						c[row * n + col] = val;
+				}
 		}
 }
 
-void imprimir_matriz(int *matriz) {
-		int i, j;
-		for (i = 0; i < N; i++) {
-				for (j = 0; j < N; j++) {
-						printf("%d ", matriz[i * N + j]);
+// Función para multiplicar matrices en el device
+__global__ void matrixMultGPU(int *a, int *b, int *c, int n) {
+		int row = blockIdx.y * blockDim.y + threadIdx.y;
+		int col = blockIdx.x * blockDim.x + threadIdx.x;
+		int val = 0;
+		if (row < n && col < n) {
+				for (int k = 0; k < n; k++) {
+						val += a[row * n + k] * b[k * n + col];
+				}
+				c[row * n + col] = val;
+		}
+}
+
+// Función para imprimir matrices
+void printMatrix(int *a, int n) {
+		for (int row = 0; row < n; row++) {
+				for (int col = 0; col < n; col++) {
+						printf("%d ", a[row * n + col]);
 				}
 				printf("\n");
 		}
-		printf("\n");
 }
 
-// Main
+// Función principal
 int main() {
-    int i, j;
-    int matriz_a[N * N], matriz_b[N * N], matriz_c[N * N];
+		// Declaración de variables
+		int *a, *b, *c, *d, *e, *f; // Matrices en el host
+		int *dev_a, *dev_b, *dev_c; // Matrices en el device
+		int size = N * N * sizeof(int); // Tamaño de la matriz
+		int i, j; // Variables auxiliares
 
-    // Inicialización de las matrices
-    for (i = 0; i < N; i++) {
-        for (j = 0; j < N; j++) {
-            matriz_a[i * N + j] = rand() % 10;
-            matriz_b[i * N + j] = rand() % 10;
-            matriz_c[i * N + j] = 0;
-        }
-    }
+		// Reserva de memoria en el host
+		a = (int*)malloc(size);
+		b = (int*)malloc(size);
+		c = (int*)malloc(size);
+		d = (int*)malloc(size);
+		e = (int*)malloc(size);
+		f = (int*)malloc(size);
 
-    // Imprimir matrices
-    printf("Matriz A:\n");
-    imprimir_matriz(matriz_a);
-    printf("Matriz B:\n");
-    imprimir_matriz(matriz_b);
+		// Inicialización de matrices
+		for (i = 0; i < N; i++) {
+				for (j = 0; j < N; j++) {
+						a[i * N + j] = rand() % 10;
+						b[i * N + j] = rand() % 10;
+						c[i * N + j] = 0;
+						d[i * N + j] = rand() % 10;
+						e[i * N + j] = rand() % 10;
+						f[i * N + j] = 0;
+				}
+		}
 
-    // Multiplicar matrices en la GPU
-    int *matriz_a_d, *matriz_b_d, *matriz_c_d;
-    cudaMalloc((void**)&matriz_a_d, N * N * sizeof(int));
-    cudaMalloc((void**)&matriz_b_d, N * N * sizeof(int));
-    cudaMalloc((void**)&matriz_c_d, N * N * sizeof(int));
+		// Reserva de memoria en el device
+		cudaMalloc((void**)&dev_a, size);
+		cudaMalloc((void**)&dev_b, size);
+		cudaMalloc((void**)&dev_c, size);
 
-    cudaMemcpy(matriz_a_d, matriz_a, N * N * sizeof(int), cudaMemcpyHostToDevice);
-    cudaMemcpy(matriz_b_d, matriz_b, N * N * sizeof(int), cudaMemcpyHostToDevice);
+		// Copia de datos del host al device
+		cudaMemcpy(dev_a, a, size, cudaMemcpyHostToDevice);
+		cudaMemcpy(dev_b, b, size, cudaMemcpyHostToDevice);
+		cudaMemcpy(dev_c, c, size, cudaMemcpyHostToDevice);
 
-    dim3 dimGrid(1, 1);
-    dim3 dimBlock(N, N);
-    multiplicar_matrices<<<dimGrid, dimBlock>>>(matriz_a_d, matriz_b_d, matriz_c_d);
+		// Multiplicación de matrices en el host
+		matrixMultCPU(a, b, c, N);
 
-    cudaMemcpy(matriz_c, matriz_c_d, N * N * sizeof(int), cudaMemcpyDeviceToHost);
+		// Multiplicación de matrices en el device
+		dim3 dimBlock(BLOCK_SIZE, BLOCK_SIZE);
+		dim3 dimGrid((int)ceil(N / (float)dimBlock.x), (int)ceil(N / (float)dimBlock.y));
+		matrixMultGPU<<<dimGrid, dimBlock>>>(dev_a, dev_b, dev_c, N);
 
-    // Imprimir matriz resultante
-    printf("Matriz C:\n");
-    imprimir_matriz(matriz_c);
+		// Copia de datos del device al host
+		cudaMemcpy(d, dev_c, size, cudaMemcpyDeviceToHost);
 
-    // Liberar memoria en la GPU
-    cudaFree(matriz_a_d);
-    cudaFree(matriz_b_d);
-    cudaFree(matriz_c_d);
+		// Impresión de matrices
+		printf("Matriz A:\n");
+		printMatrix(a, N);
+		printf("Matriz B:\n");
+		printMatrix(b, N);
+		printf("Matriz C:\n");
+		printMatrix(c, N);
+		printf("Matriz D:\n");
+		printMatrix(d, N);
+		printf("Matriz E:\n");
+		printMatrix(e, N);
+		printf("Matriz F:\n");
+		printMatrix(f, N);
 
-    return 0;
+		// Liberación de memoria en el host
+		free(a);
+		free(b);
+		free(c);
+		free(d);
+		free(e);
+		free(f);
+
+		// Liberación de memoria en el device
+		cudaFree(dev_a);
+		cudaFree(dev_b);
+		cudaFree(dev_c);
+
+		return 0;
 }
