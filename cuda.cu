@@ -11,7 +11,7 @@
 
 // Definiciones
 #define N 2
-#define BLOCK_SIZE 2
+#define BLOCK_SIZE 1
 
 // Funciones
 __global__ void multiplicar_matrices(int *a, int *b, int *c, int n) {
@@ -40,6 +40,7 @@ int main() {
 	c_cpu = (int *)malloc(size);
 
 	// Inicializar matrices
+	srand(time(NULL)); // Semilla aleatoria
 	for (int i = 0; i < N * N; i++) {
 		a_cpu[i] = rand() % 10;
 		b_cpu[i] = rand() % 10;
@@ -75,7 +76,7 @@ int main() {
 
 	// Definir bloques e hilos
 	dim3 threadsPerBlock(BLOCK_SIZE, BLOCK_SIZE);
-	dim3 numBlocks(N / BLOCK_SIZE, N / BLOCK_SIZE);
+	dim3 numBlocks(1, 1);
 
 	// Lanzar kernel
 	multiplicar_matrices<<<numBlocks, threadsPerBlock>>>(a_gpu, b_gpu, c_gpu, N);
