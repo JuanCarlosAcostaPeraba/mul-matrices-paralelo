@@ -610,6 +610,6 @@ Para ejecutar este código hay que seguir los siguientes pasos:
 4. Crear un nuevo proyecto en CUDA y pegar el código en el archivo `kernel.cu`.
 5. Finalmente, ejecutar el código con el ide, dándole al botón remarcado. Este compilará el codigo la primera vez, y lo ejecutará de seguido.
 
-   ![Untitled](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/4345d100-04c9-475d-944f-807d1c36d92c/Untitled.png)
+   ![Botón del play](https://file.notion.so/f/s/4345d100-04c9-475d-944f-807d1c36d92c/Untitled.png?id=af52c0aa-1416-4446-ad29-f4bb344f17b6&table=block&spaceId=468e4f0a-eef2-4192-a273-959b9a958a93&expirationTimestamp=1691085600000&signature=npNxcTxDE0MazRR9JVwA83c7qnwfvoUwDG6GgyVNU2w&downloadName=Untitled.png)
 
 6. Posteriormente, si se queiren hacer cambios, se le da al mismo botón, ya que por cada cambio, el código se compila de nuevo.
