@@ -131,8 +131,8 @@ El tiempo que ha tardado este programa en ejecutarse en mi ordenador ha sido de:
 
 ```bash
 -------------------
-Tiempo de ejecución del programa (CPU): 3.158866 segundos
-Tiempo de ejecución del programa (gettimeofday): 3.390733 segundos
+Tiempo de ejecución del programa (CPU): 5.125940 segundos
+Tiempo de ejecución del programa (gettimeofday): 5.423054 segundos
 ```
 
 ### Como ejecutar
