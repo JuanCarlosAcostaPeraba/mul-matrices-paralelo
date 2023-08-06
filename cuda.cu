@@ -5,36 +5,49 @@
 // Inclusiones
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 #include <cuda.h>
 #include <cuda_runtime.h>
 #include <device_launch_parameters.h>
 #include <string.h>
-#include <time.h>
 
-// Definiciones
-#define N 2
-#define BLOCK_SIZE 2 // Debe ser igual a N
+// Constantes
+#define N 1024
+#define BLOCK_SIZE 32
 #define CLOCKS_PER_SEC 1000000
 
-// Funciones
-__global__ void multiplicar_matrices(int *a, int *b, int *c, int n) {
+// Función para multiplicar matrices
+__global__ void multiplicar_matrices(int *matriz_a, int *matriz_b, int *matriz_c) {
 	int fila = blockIdx.y * blockDim.y + threadIdx.y;
 	int columna = blockIdx.x * blockDim.x + threadIdx.x;
 
-	if (fila < n && columna < n) {
+	if (fila < N && columna < N) {
 		int suma = 0;
-		for (int i = 0; i < n; i++) {
-			suma += a[fila * n + i] * b[i * n + columna];
+		for (int i = 0; i < N; i++) {
+			suma += matriz_a[fila * N + i] * matriz_b[i * N + columna];
 		}
-		c[fila * n + columna] = suma;
+		matriz_c[fila * N + columna] = suma;
 	}
+}
+
+// Función para imprimir matrices
+void imprimir_matriz(int *matriz) {
+	for (int i = 0; i < N * N; i++) {
+		printf("%d ", matriz[i]);
+		if ((i + 1) % N == 0) {
+			printf("\n");
+		}
+	}
+	printf("\n");
 }
 
 // Main
 int main() {
-	int *a_cpu, *b_cpu, *c_cpu;
-	int *a_gpu, *b_gpu, *c_gpu;
-	size_t size = N * N * sizeof(int);
+	// Declaración de variables
+	int *a_cpu, *b_cpu, *c_cpu; // Matrices CPU
+	int *a_gpu, *b_gpu, *c_gpu; // Matrices GPU
+	size_t size = N * N * sizeof(int); // Tamaño de las matrices
+	srand(time(NULL)); // semilla para generar números aleatorios
 
 	// Empezar contador de tiempo
 	clock_t start = clock(); // CPU
@@ -45,30 +58,16 @@ int main() {
 	c_cpu = (int *)malloc(size);
 
 	// Inicializar matrices
-	srand(time(NULL)); // Semilla aleatoria
 	for (int i = 0; i < N * N; i++) {
 		a_cpu[i] = rand() % 10;
 		b_cpu[i] = rand() % 10;
 	}
 
-	// Mostrar matrices
+	// Imprimir matrices
 	printf("Matriz A:\n");
-	for (int i = 0; i < N * N; i++) {
-		printf("%d ", a_cpu[i]);
-		if ((i + 1) % N == 0) {
-			printf("\n");
-		}
-	}
-	printf("\n");
-
+	imprimir_matriz(a_cpu);
 	printf("Matriz B:\n");
-	for (int i = 0; i < N * N; i++) {
-		printf("%d ", b_cpu[i]);
-		if ((i + 1) % N == 0) {
-			printf("\n");
-		}
-	}
-	printf("\n");
+	imprimir_matriz(b_cpu);
 
 	// Reserva de memoria en GPU
 	cudaMalloc(&a_gpu, size);
@@ -79,16 +78,20 @@ int main() {
 	cudaMemcpy(a_gpu, a_cpu, size, cudaMemcpyHostToDevice);
 	cudaMemcpy(b_gpu, b_cpu, size, cudaMemcpyHostToDevice);
 
+	// Inicializar matriz C en GPU
 	memset(c_cpu, 0, size);
 
-	// Definir bloques e hilos
+	// Definir bloques e hilos para el kernel
 	dim3 threadsPerBlock(BLOCK_SIZE, BLOCK_SIZE);
 	dim3 numBlocks(N / threadsPerBlock.x, N / threadsPerBlock.y);
 
 	// Lanzar kernel
 	multiplicar_matrices<<<numBlocks, threadsPerBlock>>>(a_gpu, b_gpu, c_gpu, N);
 
+	// Sincronizar kernel
 	cudaDeviceSynchronize();
+
+	// Verificar errores
 	cudaError_t error = cudaGetLastError();
 	if (error != cudaSuccess) {
 		printf("Error de CUDA: %s\n", cudaGetErrorString(error));
@@ -99,13 +102,7 @@ int main() {
 
 	// Mostrar resultado
 	printf("Matriz C:\n");
-	for (int i = 0; i < N * N; i++) {
-		printf("%d ", c_cpu[i]);
-		if ((i + 1) % N == 0) {
-			printf("\n");
-		}
-	}
-	printf("\n");
+	imprimir_matriz(c_cpu);
 
 	// Liberar memoria
 	free(a_cpu);
@@ -119,6 +116,6 @@ int main() {
 	printf("\n-------------------\n");
 	printf("Tiempo de ejecución del programa (CPU): %f segundos\n", ((double) clock() - start) / CLOCKS_PER_SEC);
 
-
+	// Fin del programa
 	return 0;
 }

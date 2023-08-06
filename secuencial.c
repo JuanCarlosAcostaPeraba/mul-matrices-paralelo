@@ -11,7 +11,7 @@
 #define N 1000
 #define CLOCKS_PER_SEC 1000000
 
-// Funciones
+// Función para multiplicar matrices
 void multiplicar_matrices(int **matriz_a, int **matriz_b, int **matriz_c) {
 	int i, j, k;
 	for (i = 0; i < N; i++) {
@@ -23,6 +23,7 @@ void multiplicar_matrices(int **matriz_a, int **matriz_b, int **matriz_c) {
 	}
 }
 
+// Función para imprimir matrices
 void imprimir_matriz(int **matriz) {
 	int i, j;
 	for (i = 0; i < N; i++) {
@@ -39,12 +40,10 @@ int main(int argc, char *argv[]) {
 	// Declaración de variables
 	int **matriz_a, **matriz_b, **matriz_c;
 	int i, j;
-
-	struct timeval inicio, fin;
+	srand(time(NULL)); // semilla para generar números aleatorios
 
 	// Empezar contador de tiempo
 	clock_t start = clock(); // CPU
-	gettimeofday(&inicio, NULL); // Hora del sistema
 
 	// Reserva de memoria para las matrices
 	matriz_a = (int **) malloc(N * sizeof(int *));
@@ -71,8 +70,11 @@ int main(int argc, char *argv[]) {
 	multiplicar_matrices(matriz_a, matriz_b, matriz_c);
 
 	// Imprimir matrices
+	printf("\nMatriz A:\n");
 	imprimir_matriz(matriz_a);
+	printf("\nMatriz B:\n");
 	imprimir_matriz(matriz_b);
+	printf("\nMatriz C (resultado):\n");
 	imprimir_matriz(matriz_c);
 
 	// Liberar memoria de las matrices
@@ -85,18 +87,10 @@ int main(int argc, char *argv[]) {
 	free(matriz_b);
 	free(matriz_c);
 
-	gettimeofday(&fin, NULL);
-
 	// Imprimir tiempo de ejecución
 	printf("\n-------------------\n");
 	printf("Tiempo de ejecución del programa (CPU): %f segundos\n", ((double) clock() - start) / CLOCKS_PER_SEC);
-	printf("Tiempo de ejecución del programa (gettimeofday): %f segundos\n", (double) (fin.tv_sec - inicio.tv_sec) + (double) (fin.tv_usec - inicio.tv_usec) / 1000000);
 
 	// Fin del programa
 	return 0;
 }
-
-/// Instrucciones para compilar el programa:
-/// gcc secuencial.c -o secuencial
-/// Instrucciones para ejecutar el programa:
-/// ./secuencial
