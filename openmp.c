@@ -10,21 +10,39 @@
 
 // Constantes
 #define N 1000
-#define THREADS 8
 #define CLOCKS_PER_SEC 1000000
 
 // Función para multiplicar matrices
 void multiplicar_matrices(int **matriz_a, int **matriz_b, int **matriz_c) {
-	int i, j, k;
-	omp_set_num_threads(THREADS);
-	#pragma omp parallel for private(i, j, k)
-	for (i = 0; i < N; i++) {
-		for (j = 0; j < N; j++) {
-			for (k = 0; k < N; k++) {
-				matriz_c[i][j] += matriz_a[i][k] * matriz_b[k][j];
+	int i, j, k, tid, nthreads;
+	#pragma omp parallel shared(matriz_a, matriz_b, matriz_c, nthreads) private(tid, i, j, k)
+		tid = omp_get_thread_num();
+		#pragma omp for
+		for (i = 0; i < N; i++) {
+			for (j = 0; j < N; j++){
+				matriz_a[i][j] = rand() % 10;
 			}
 		}
-	}
+		#pragma omp for
+		for (i = 0; i < N; i++) {
+			for (j = 0; j < N; j++){
+				matriz_b[i][j] = rand() % 10;
+			}
+		}
+		#pragma omp for
+		for (i = 0; i < N; i++) {
+			for (j = 0; j < N; j++){
+				matriz_c[i][j] = 0;
+			}
+		}
+		#pragma omp for
+		for (i = 0; i < N; i++) {
+			for (j = 0; j < N; j++) {
+				for (k = 0; k < N; k++) {
+					matriz_c[i][j] += matriz_a[i][k] * matriz_b[k][j];
+				}
+			}
+		}
 }
 
 // Función para imprimir matrices
@@ -57,17 +75,6 @@ int main(int argc, char *argv[]) {
 		matriz_a[i] = (int *) malloc(N * sizeof(int));
 		matriz_b[i] = (int *) malloc(N * sizeof(int));
 		matriz_c[i] = (int *) malloc(N * sizeof(int));
-	}
-
-	// Inicializar matrices
-	for (i = 0; i < N; i++) {
-		for (j = 0; j < N; j++) {
-			// rellena la matriz a y b con valores aleatorios entre 0 y 9
-			matriz_a[i][j] = rand() % 10;
-			matriz_b[i][j] = rand() % 10;
-			// inicializa la matriz c con 0
-			matriz_c[i][j] = 0;
-		}
 	}
 
 	// Multiplicar matrices
