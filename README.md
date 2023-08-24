@@ -2,7 +2,7 @@
 
 ## Programa Secuencial
 
-El programa secuencial se encuentra en el archivo `secuencial.c` y se compila con el comando:
+El programa secuencial se encuentra en el archivo [secuencial.c](./secuencial.c) y se compila con el comando:
 
 ```bash
 # gcc <nombre del código C>.c -o <nombre del ejecutable>
@@ -17,7 +17,7 @@ Para ejecutar el programa se debe ejecutar el comando:
 
 ## Programa Paralelo con OpenMP
 
-El programa paralelo se encuentra en el archivo `openmp.c` y se compila con el comando:
+El programa paralelo se encuentra en el archivo [openmp.c](./openmp.c) y se compila con el comando:
 
 ```bash
 # gcc <nombre del código C>.c -o <nombre del ejecutable> -fopenmp
@@ -32,7 +32,7 @@ Para ejecutar el programa se debe ejecutar el comando:
 
 ## Programa Paralelo con OpenMPI
 
-El programa paralelo se encuentra en el archivo `openmpi.c` y se compila con el comando:
+El programa paralelo se encuentra en el archivo [openmpi.c](./openmpi.c) y se compila con el comando:
 
 ```bash
 # mpicc <nombre del código C>.c -o <nombre del ejecutable>
@@ -48,7 +48,7 @@ mpirun -np 8 ./openmpi
 
 ## Programa Paralelo con CUDA
 
-El programa paralelo se encuentra en el archivo `cuda.cu` y se compila y ejecuta con el IDE _[Microsoft Visual Studio](https://visualstudio.microsoft.com/es/downloads/)_ y con la [librería de CUDA](https://developer.nvidia.com/cuda-zone) desarrollada por NVIDIA.
+El programa paralelo se encuentra en el archivo [cuda.cu](./cuda.cu) y se compila y ejecuta con el IDE _[Microsoft Visual Studio](https://visualstudio.microsoft.com/es/downloads/)_ y con la [librería de CUDA](https://developer.nvidia.com/cuda-zone) desarrollada por NVIDIA.
 
 Para compilar y ejecutar hay que seguir los siguientes pasos:
 
